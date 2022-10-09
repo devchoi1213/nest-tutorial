@@ -3,10 +3,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import {VerifyEmailDto} from "./dto/verify-email.dto";
 import {UserLoginDto} from "./dto/login-user.dto";
 import {UsersService} from "./users.service";
-import {AuthService} from "../auth/auth.service";
-import {UserInfo} from "./type/userInfo.type";
 import {AuthGuard} from "../guard/auth.guard";
 import {User} from "../decorator/user.decorator";
+import {UserInfoEntity} from "./entity/userInfo.entity";
 
 @Controller('users')
 export class UsersController {
@@ -36,15 +35,17 @@ export class UsersController {
 
     @UseGuards(AuthGuard)
     @Get(':id')
-    async getUserInfo(@Param('id') userId: string): Promise<UserInfo> {
+    async getUserInfo(@Param('id') userId: string): Promise<UserInfoEntity> {
         return this.usersService.getUserInfo(userId);
     }
 
+    @UseGuards(AuthGuard)
     @Get()
-    getHello(@User() user: UserInfo) {
+    getHello(@User(new ValidationPipe({ validateCustomDecorators: true })) user: UserInfoEntity) {
         console.log(user);
     }
 
+    @UseGuards(AuthGuard)
     @Get('/username')
     getHello2(@User('name') name: string) {
         console.log(name);

@@ -6,7 +6,7 @@ import {DataSource, Repository} from "typeorm";
 import {UserEntity} from "./entity/user.entity";
 import {ulid} from "ulid";
 import {AuthService} from "../auth/auth.service";
-import {UserInfo} from "./type/userInfo.type";
+import {UserInfoEntity} from "./entity/userInfo.entity";
 
 @Injectable()
 export class UsersService {
@@ -94,7 +94,7 @@ export class UsersService {
         });
     }
 
-    async getUserInfo(userId: string): Promise<UserInfo> {
+    async getUserInfo(userId: string): Promise<UserInfoEntity> {
         const user = await this.usersRepository.findOne({ where: { id: userId } });
 
         if (!user) {
