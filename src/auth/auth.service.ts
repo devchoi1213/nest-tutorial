@@ -2,6 +2,7 @@ import * as jwt from 'jsonwebtoken';
 import {Inject, Injectable, UnauthorizedException} from '@nestjs/common';
 import authConfig from 'src/config/authConfig';
 import { ConfigType } from '@nestjs/config';
+import {UserInfo} from "../users/type/userInfo.type";
 
 interface User {
     id: string;
@@ -25,14 +26,15 @@ export class AuthService {
         });
     }
 
-    verify(jwtString: string) {
+    verify(jwtString: string): UserInfo {
         try {
             const payload = jwt.verify(jwtString, this.config.jwtSecret) as (jwt.JwtPayload | string) & User;
 
-            const { id, email } = payload;
+            const { id, email, name } = payload;
 
             return {
-                userId: id,
+                id,
+                name,
                 email,
             }
 

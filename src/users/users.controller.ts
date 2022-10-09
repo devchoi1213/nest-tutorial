@@ -6,6 +6,7 @@ import {UsersService} from "./users.service";
 import {AuthService} from "../auth/auth.service";
 import {UserInfo} from "./type/userInfo.type";
 import {AuthGuard} from "../guard/auth.guard";
+import {User} from "../decorator/user.decorator";
 
 @Controller('users')
 export class UsersController {
@@ -37,5 +38,15 @@ export class UsersController {
     @Get(':id')
     async getUserInfo(@Param('id') userId: string): Promise<UserInfo> {
         return this.usersService.getUserInfo(userId);
+    }
+
+    @Get()
+    getHello(@User() user: UserInfo) {
+        console.log(user);
+    }
+
+    @Get('/username')
+    getHello2(@User('name') name: string) {
+        console.log(name);
     }
 }
