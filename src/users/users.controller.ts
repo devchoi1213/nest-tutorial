@@ -1,12 +1,17 @@
-import {Body, Controller, Delete, Get, Param, Post, Query, ValidationPipe} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Query, ValidationPipe, Headers, UseGuards} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import {VerifyEmailDto} from "./dto/verify-email.dto";
 import {UserLoginDto} from "./dto/login-user.dto";
 import {UsersService} from "./users.service";
+import {AuthService} from "../auth/auth.service";
+import {UserInfo} from "./type/userInfo.type";
+import {AuthGuard} from "../guard/auth.guard";
 
 @Controller('users')
 export class UsersController {
-    constructor(private usersService: UsersService) { }
+    constructor(
+        private usersService: UsersService
+    ) { }
 
     @Post()
     async createUser(@Body() dto: CreateUserDto): Promise<void> {
@@ -28,9 +33,9 @@ export class UsersController {
         return await this.usersService.login(email, password);
     }
 
-    @Get('/:id')
-    async getUserInfo(@Param('id') userId: string): Promise<string> {
-        // return await this.usersService.getUserInfo(userId);
-        return 'test';
+    @UseGuards(AuthGuard)
+    @Get(':id')
+    async getUserInfo(@Param('id') userId: string): Promise<UserInfo> {
+        return this.usersService.getUserInfo(userId);
     }
 }

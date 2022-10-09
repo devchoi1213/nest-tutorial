@@ -6,6 +6,7 @@ import {DataSource, Repository} from "typeorm";
 import {UserEntity} from "./entity/user.entity";
 import {ulid} from "ulid";
 import {AuthService} from "../auth/auth.service";
+import {UserInfo} from "./type/userInfo.type";
 
 @Injectable()
 export class UsersService {
@@ -93,10 +94,17 @@ export class UsersService {
         });
     }
 
-    async getUserInfo(userId: string): Promise<string> {
-        // 1. userId를 가진 유저가 존재하는지 DB에서 확인하고 없다면 에러 처리
-        // 2. 조회된 데이터를 UserInfo 타입으로 응답
+    async getUserInfo(userId: string): Promise<UserInfo> {
+        const user = await this.usersRepository.findOne({ where: { id: userId } });
 
-        throw new Error('Method not implemented.');
+        if (!user) {
+            throw new NotFoundException('유저가 존재하지 않습니다');
+        }
+
+        return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+        };
     }
 }
