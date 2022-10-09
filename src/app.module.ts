@@ -7,6 +7,7 @@ import {validationSchema} from "./config/emailConfig.validation";
 import databaseConfig from "./config/databaseConfig";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {LoggerMiddleware} from "./middleware/logger.middleware";
+import authConfig from "./config/authConfig";
 
 //TODO @nestjs/config 패키지를 사용하지 않고 .env 파일이 존재하는 folder를 
 // 동적으로 전달할 수 있는 커스텀 동적 모듈 구현하기
@@ -16,7 +17,7 @@ import {LoggerMiddleware} from "./middleware/logger.middleware";
     UsersModule,
     ConfigModule.forRoot({
       envFilePath: [`${__dirname}/config/env/.${process.env.NODE_ENV}.env`],
-      load: [emailConfig, databaseConfig],
+      load: [emailConfig, databaseConfig, authConfig],
       isGlobal: true,
       validationSchema,
     }),
