@@ -6,7 +6,9 @@ import {UsersService} from "./users.service";
 import {AuthGuard} from "../guard/auth.guard";
 import {User} from "../decorator/user.decorator";
 import {UserInfoEntity} from "./entity/userInfo.entity";
+import {Roles} from "../decorator/role.decorater";
 
+@Roles('user')
 @Controller('users')
 export class UsersController {
     constructor(
@@ -14,6 +16,7 @@ export class UsersController {
     ) { }
 
     @Post()
+    @Roles('admin')
     async createUser(@Body() dto: CreateUserDto): Promise<void> {
         const { name, email, password } = dto;
         await this.usersService.createUser(name, email, password);

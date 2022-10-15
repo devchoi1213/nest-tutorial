@@ -1,7 +1,7 @@
 import {IsInt, IsString} from "class-validator";
 
 export class UserInfoEntity {
-    @IsInt()
+    @IsString()
     name: string;
 
     @IsString()
