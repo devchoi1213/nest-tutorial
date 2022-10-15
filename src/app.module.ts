@@ -11,6 +11,7 @@ import authConfig from "./config/authConfig";
 import {APP_FILTER, APP_GUARD} from "@nestjs/core";
 import {RolesGuard} from "./guard/Roles.guard";
 import {HttpExceptionFilter} from "./filter/HttpExceptionFIlter.filter";
+import {ExceptionModule} from "./exception/exception.module";
 
 //TODO @nestjs/config 패키지를 사용하지 않고 .env 파일이 존재하는 folder를 
 // 동적으로 전달할 수 있는 커스텀 동적 모듈 구현하기
@@ -34,16 +35,13 @@ import {HttpExceptionFilter} from "./filter/HttpExceptionFIlter.filter";
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: Boolean(process.env.DATABASE_SYNCHRONIZE), // true,
     }),
+    ExceptionModule,
   ],
   controllers: [AppController],
   providers: [
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
-    },
-    {
-      provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
     },
   ],
 })

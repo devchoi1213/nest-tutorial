@@ -55,7 +55,7 @@ export class UsersController {
     async getUserInfo(@Param('id') userId: string): Promise<UserInfoEntity> {
         return this.usersService.getUserInfo(userId);
     }
-    
+
     @UseGuards(AuthGuard)
     @Roles('admin')
     @Get()
