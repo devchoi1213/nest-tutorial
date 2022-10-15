@@ -8,8 +8,9 @@ import databaseConfig from "./config/databaseConfig";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {LoggerMiddleware} from "./middleware/logger.middleware";
 import authConfig from "./config/authConfig";
-import {APP_GUARD} from "@nestjs/core";
+import {APP_FILTER, APP_GUARD} from "@nestjs/core";
 import {RolesGuard} from "./guard/Roles.guard";
+import {HttpExceptionFilter} from "./filter/HttpExceptionFIlter.filter";
 
 //TODO @nestjs/config 패키지를 사용하지 않고 .env 파일이 존재하는 folder를 
 // 동적으로 전달할 수 있는 커스텀 동적 모듈 구현하기
@@ -39,6 +40,10 @@ import {RolesGuard} from "./guard/Roles.guard";
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
     },
   ],
 })

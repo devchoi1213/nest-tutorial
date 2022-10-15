@@ -1,4 +1,16 @@
-import {Body, Controller, Delete, Get, Param, Post, Query, ValidationPipe, Headers, UseGuards} from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
+    Post,
+    Query,
+    ValidationPipe,
+    Headers,
+    UseGuards,
+    UseFilters, BadRequestException
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import {VerifyEmailDto} from "./dto/verify-email.dto";
 import {UserLoginDto} from "./dto/login-user.dto";
@@ -7,6 +19,7 @@ import {AuthGuard} from "../guard/auth.guard";
 import {User} from "../decorator/user.decorator";
 import {UserInfoEntity} from "./entity/userInfo.entity";
 import {Roles} from "../decorator/role.decorater";
+import {HttpExceptionFilter} from "../filter/HttpExceptionFIlter.filter";
 
 @Roles('user')
 @Controller('users')
@@ -14,6 +27,7 @@ export class UsersController {
     constructor(
         private usersService: UsersService
     ) { }
+
 
     @Post()
     @Roles('admin')
@@ -41,10 +55,12 @@ export class UsersController {
     async getUserInfo(@Param('id') userId: string): Promise<UserInfoEntity> {
         return this.usersService.getUserInfo(userId);
     }
-
+    
     @UseGuards(AuthGuard)
+    @Roles('admin')
     @Get()
     getHello(@User(new ValidationPipe({ validateCustomDecorators: true })) user: UserInfoEntity) {
+        // throw new BadRequestException('test')
         console.log(user);
     }
 
