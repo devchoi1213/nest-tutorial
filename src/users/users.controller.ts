@@ -1,15 +1,12 @@
 import {
     Body,
     Controller,
-    Delete,
     Get,
     Param,
     Post,
     Query,
     ValidationPipe,
-    Headers,
     UseGuards,
-    UseFilters, BadRequestException
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import {VerifyEmailDto} from "./dto/verify-email.dto";
@@ -19,13 +16,18 @@ import {AuthGuard} from "../guard/auth.guard";
 import {User} from "../decorator/user.decorator";
 import {UserInfoEntity} from "./entity/userInfo.entity";
 import {Roles} from "../decorator/role.decorater";
-import {HttpExceptionFilter} from "../filter/HttpExceptionFIlter.filter";
+import {CreateUserCommand} from "./command/creat-user.command";
+import {CommandBus, QueryBus} from "@nestjs/cqrs";
+import {LoginCommand} from "./command/login.command";
+import {VerifyEmailCommand} from "./command/verify-email.command";
+import {GetUserInfoQuery} from "./query/get-user-info.query";
 
 @Roles('user')
 @Controller('users')
 export class UsersController {
     constructor(
-        private usersService: UsersService
+        private commandBus: CommandBus,
+        private queryBus: QueryBus,
     ) { }
 
 
@@ -33,27 +35,33 @@ export class UsersController {
     @Roles('admin')
     async createUser(@Body() dto: CreateUserDto): Promise<void> {
         const { name, email, password } = dto;
-        await this.usersService.createUser(name, email, password);
+
+        const command = new CreateUserCommand(name, email, password);
+        return this.commandBus.execute(command);
     }
 
     @Post('/email-verify')
     async verifyEmail(@Query() dto: VerifyEmailDto): Promise<string> {
         const { signupVerifyToken } = dto;
 
-        return await this.usersService.verifyEmail(signupVerifyToken);
+        const command = new VerifyEmailCommand(signupVerifyToken);
+        return this.commandBus.execute(command);
     }
 
     @Post('/login')
     async login(@Body() dto: UserLoginDto): Promise<string> {
         const { email, password } = dto;
 
-        return await this.usersService.login(email, password);
+        const command = new LoginCommand(email, password);
+        return this.commandBus.execute(command);
     }
 
     @UseGuards(AuthGuard)
     @Get(':id')
     async getUserInfo(@Param('id') userId: string): Promise<UserInfoEntity> {
-        return this.usersService.getUserInfo(userId);
+        const getUserInfoQuery = new GetUserInfoQuery(userId);
+
+        return this.queryBus.execute(getUserInfoQuery);
     }
 
     @UseGuards(AuthGuard)
